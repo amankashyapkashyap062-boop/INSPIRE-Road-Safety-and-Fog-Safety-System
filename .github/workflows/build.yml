@@ -34,6 +34,10 @@ jobs:
           rm -rf build_app/lib
           cp -r lib build_app/lib
 
+      - name: Remove default Flutter test
+        run: |
+          rm -rf build_app/test
+
       - name: Get Flutter dependencies
         working-directory: build_app
         run: flutter pub get

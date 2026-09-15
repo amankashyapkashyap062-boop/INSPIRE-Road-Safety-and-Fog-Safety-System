@@ -1,0 +1,53 @@
+name: Build Flutter APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Create Flutter Android project
+        run: |
+          flutter create \
+            --platforms=android \
+            --project-name=inspire_safety \
+            --org=com.inspire.safety \
+            build_app
+
+      - name: Copy application files
+        run: |
+          cp pubspec.yaml build_app/pubspec.yaml
+          rm -rf build_app/lib
+          cp -r lib build_app/lib
+
+      - name: Get Flutter dependencies
+        working-directory: build_app
+        run: flutter pub get
+
+      - name: Analyze Flutter project
+        working-directory: build_app
+        run: flutter analyze
+
+      - name: Build release APK
+        working-directory: build_app
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: inspire-safety-apk
+          path: build_app/build/app/outputs/flutter-apk/app-release.apk

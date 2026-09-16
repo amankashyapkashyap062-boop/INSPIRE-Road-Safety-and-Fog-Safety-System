@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/user_profile.dart';
 import 'page2_permissions.dart';
+import '../storage/settings_storage.dart';
 
 class Page1UserDetails extends StatefulWidget {
   const Page1UserDetails({super.key});
@@ -47,33 +48,37 @@ class _Page1UserDetailsState extends State<Page1UserDetails> {
     return null;
   }
 
-  void saveProfile() {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+  Future<void> saveProfile() async {
+  if (!_formKey.currentState!.validate()) {
+    return;
+  }
 
-    final profile = UserProfile(
-      fullName: fullNameController.text.trim(),
-      mobileNumber: mobileController.text.trim(),
-      age: ageController.text.trim(),
-      state: stateController.text.trim(),
-      district: districtController.text.trim(),
-      guardianName: guardianNameController.text.trim(),
-      guardianMobile: guardianMobileController.text.trim(),
-      emergencyContact: emergencyController.text.trim(),
-      bloodGroup: bloodGroupController.text.trim(),
-      allergy: allergyController.text.trim(),
-      medicalInformation: medicalController.text.trim(),
-    );
+  final profile = UserProfile(
+    fullName: fullNameController.text.trim(),
+    mobileNumber: mobileController.text.trim(),
+    age: ageController.text.trim(),
+    state: stateController.text.trim(),
+    district: districtController.text.trim(),
+    guardianName: guardianNameController.text.trim(),
+    guardianMobile: guardianMobileController.text.trim(),
+    emergencyContact: emergencyController.text.trim(),
+    bloodGroup: bloodGroupController.text.trim(),
+    allergy: allergyController.text.trim(),
+    medicalInformation: medicalController.text.trim(),
+  );
 
-    debugPrint('Profile saved for: ${profile.fullName}');
+  await SettingsStorage.saveProfile(profile);
 
-    Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => const Page2Permissions(),
-  ),
-);
+  if (!mounted) return;
+
+  debugPrint('Profile saved for: ${profile.fullName}');
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const Page2Permissions(),
+    ),
+  );
   }
 
   Widget buildField({

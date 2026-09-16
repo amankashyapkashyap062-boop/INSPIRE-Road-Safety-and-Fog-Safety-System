@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dashboard.dart';
 
 class Page2Permissions extends StatefulWidget {
   const Page2Permissions({super.key});
@@ -34,11 +35,12 @@ class _Page2PermissionsState extends State<Page2Permissions> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Consent accepted. आगे Dashboard जोड़ा जाएगा।'),
-      ),
-    );
+    Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(
+    builder: (context) => const Dashboard(),
+  ),
+);
   }
 
   Widget consentTile({

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/user_profile.dart';
+import 'page2_permissions.dart';
 
 class Page1UserDetails extends StatefulWidget {
   const Page1UserDetails({super.key});
@@ -67,11 +68,12 @@ class _Page1UserDetailsState extends State<Page1UserDetails> {
 
     debugPrint('Profile saved for: ${profile.fullName}');
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Profile details saved successfully'),
-      ),
-    );
+    Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => const Page2Permissions(),
+  ),
+);
   }
 
   Widget buildField({

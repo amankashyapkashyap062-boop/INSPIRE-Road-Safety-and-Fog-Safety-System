@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../models/user_profile.dart';
-import 'page2_permissions.dart';
 import '../storage/settings_storage.dart';
+import 'page2_permissions.dart';
 
 class Page1UserDetails extends StatefulWidget {
   const Page1UserDetails({super.key});
@@ -49,36 +50,34 @@ class _Page1UserDetailsState extends State<Page1UserDetails> {
   }
 
   Future<void> saveProfile() async {
-  if (!_formKey.currentState!.validate()) {
-    return;
-  }
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-  final profile = UserProfile(
-    fullName: fullNameController.text.trim(),
-    mobileNumber: mobileController.text.trim(),
-    age: ageController.text.trim(),
-    state: stateController.text.trim(),
-    district: districtController.text.trim(),
-    guardianName: guardianNameController.text.trim(),
-    guardianMobile: guardianMobileController.text.trim(),
-    emergencyContact: emergencyController.text.trim(),
-    bloodGroup: bloodGroupController.text.trim(),
-    allergy: allergyController.text.trim(),
-    medicalInformation: medicalController.text.trim(),
-  );
+    final profile = UserProfile(
+      fullName: fullNameController.text.trim(),
+      mobileNumber: mobileController.text.trim(),
+      age: ageController.text.trim(),
+      state: stateController.text.trim(),
+      district: districtController.text.trim(),
+      guardianName: guardianNameController.text.trim(),
+      guardianMobile: guardianMobileController.text.trim(),
+      emergencyContact: emergencyController.text.trim(),
+      bloodGroup: bloodGroupController.text.trim(),
+      allergy: allergyController.text.trim(),
+      medicalInformation: medicalController.text.trim(),
+    );
 
-  await SettingsStorage.saveProfile(profile);
+    await SettingsStorage.saveProfile(profile);
 
-  if (!mounted) return;
+    if (!mounted) return;
 
-  debugPrint('Profile saved for: ${profile.fullName}');
-
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const Page2Permissions(),
-    ),
-  );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const Page2Permissions(),
+      ),
+    );
   }
 
   Widget buildField({
@@ -123,7 +122,9 @@ class _Page1UserDetailsState extends State<Page1UserDetails> {
                 Icons.person_pin,
                 size: 70,
               ),
+
               const SizedBox(height: 8),
+
               const Text(
                 'Safety Profile',
                 textAlign: TextAlign.center,
@@ -132,11 +133,14 @@ class _Page1UserDetailsState extends State<Page1UserDetails> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+
               const SizedBox(height: 6),
+
               const Text(
                 'अपनी सुरक्षा से जुड़ी जानकारी दर्ज करें',
                 textAlign: TextAlign.center,
               ),
+
               const SizedBox(height: 24),
 
               buildField(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dashboard.dart';
+import '../storage/settings_storage.dart';
 
 class Page2Permissions extends StatefulWidget {
   const Page2Permissions({super.key});
@@ -23,7 +24,7 @@ class _Page2PermissionsState extends State<Page2Permissions> {
         privacyConsent;
   }
 
-  void continueToApp() {
+  Future<void> continueToApp() async {
     if (!allRequiredConsentGiven) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -35,12 +36,22 @@ class _Page2PermissionsState extends State<Page2Permissions> {
       return;
     }
 
+    await SettingsStorage.saveConsents(
+      locationConsent: locationConsent,
+      locationSharingConsent: locationSharingConsent,
+      emergencyAlertConsent: emergencyAlertConsent,
+      guardianAlertConsent: guardianAlertConsent,
+      privacyConsent: privacyConsent,
+    );
+
+    if (!mounted) return;
+
     Navigator.pushReplacement(
-  context,
-  MaterialPageRoute(
-    builder: (context) => const Dashboard(),
-  ),
-);
+      context,
+      MaterialPageRoute(
+        builder: (context) => const Dashboard(),
+      ),
+    );
   }
 
   Widget consentTile({
@@ -55,7 +66,9 @@ class _Page2PermissionsState extends State<Page2Permissions> {
         secondary: Icon(icon),
         title: Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 6),
@@ -83,7 +96,9 @@ class _Page2PermissionsState extends State<Page2Permissions> {
               Icons.security,
               size: 70,
             ),
+
             const SizedBox(height: 10),
+
             const Text(
               'Safety & Privacy',
               textAlign: TextAlign.center,
@@ -92,11 +107,14 @@ class _Page2PermissionsState extends State<Page2Permissions> {
                 fontWeight: FontWeight.bold,
               ),
             ),
+
             const SizedBox(height: 8),
+
             const Text(
               'App को safety features चलाने के लिए नीचे दी गई permissions और consents की आवश्यकता होगी।',
               textAlign: TextAlign.center,
             ),
+
             const SizedBox(height: 20),
 
             consentTile(

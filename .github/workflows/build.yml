@@ -28,6 +28,40 @@ jobs:
             --org=com.inspire.safety \
             build_app
 
+      - name: Add Android location permissions
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          manifest = Path(
+              "build_app/android/app/src/main/AndroidManifest.xml"
+          )
+
+          content = manifest.read_text(encoding="utf-8")
+
+          permissions = [
+              '    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />',
+              '    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />',
+          ]
+
+          for permission in permissions:
+              if permission not in content:
+                  content = content.replace(
+                      '<manifest ',
+                      '<manifest ',
+                      1
+                  )
+                  manifest_end = content.find('>', content.find('<manifest'))
+                  content = (
+                      content[:manifest_end + 1]
+                      + '\n'
+                      + permission
+                      + content[manifest_end + 1:]
+                  )
+
+          manifest.write_text(content, encoding="utf-8")
+          PY
+
       - name: Copy application files
         run: |
           cp pubspec.yaml build_app/pubspec.yaml

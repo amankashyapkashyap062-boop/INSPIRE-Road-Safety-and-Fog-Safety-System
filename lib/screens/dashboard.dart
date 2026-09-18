@@ -1,7 +1,56 @@
 import 'package:flutter/material.dart';
+import '../services/location_service.dart';
+import 'package:geolocator/geolocator.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
+
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+
+import '../services/location_service.dart';
+
+class Dashboard extends StatefulWidget {
+  const Dashboard({super.key});
+
+  @override
+  State<Dashboard> createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
+  Position? currentPosition;
+  bool locationLoading = false;
+  String locationStatus = 'NOT CHECKED';
+
+  @override
+  void initState() {
+    super.initState();
+    checkLocation();
+  }
+
+  Future<void> checkLocation() async {
+    if (!mounted) return;
+
+    setState(() {
+      locationLoading = true;
+      locationStatus = 'CHECKING...';
+    });
+
+    final position = await LocationService.getCurrentLocation();
+
+    if (!mounted) return;
+
+    setState(() {
+      locationLoading = false;
+
+      if (position != null) {
+        currentPosition = position;
+        locationStatus = 'ACTIVE';
+      } else {
+        locationStatus = 'OFF / PERMISSION NEEDED';
+      }
+    });
+  }
 
   Widget statusCard({
     required IconData icon,
@@ -12,7 +61,10 @@ class Dashboard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 14),
       child: ListTile(
-        leading: Icon(icon, size: 35),
+        leading: Icon(
+          icon,
+          size: 35,
+        ),
         title: Text(
           title,
           style: const TextStyle(
@@ -20,10 +72,26 @@ class Dashboard extends StatelessWidget {
             fontSize: 17,
           ),
         ),
-        subtitle: Text('$status\n$description'),
+        subtitle: Text(
+          '$status\n$description',
+        ),
         isThreeLine: true,
       ),
     );
+  }
+
+  String getLocationDescription() {
+    if (locationLoading) {
+      return 'GPS location check की जा रही है...';
+    }
+
+    if (currentPosition == null) {
+      return 'GPS location उपलब्ध नहीं है। Location permission और GPS service check करें।';
+    }
+
+    return 'Latitude: ${currentPosition!.latitude.toStringAsFixed(5)}\n'
+        'Longitude: ${currentPosition!.longitude.toStringAsFixed(5)}\n'
+        'Accuracy: ${currentPosition!.accuracy.toStringAsFixed(1)} m';
   }
 
   @override
@@ -90,10 +158,19 @@ class Dashboard extends StatelessWidget {
             statusCard(
               icon: Icons.location_on,
               title: 'Location',
-              status: 'PERMISSION STATUS',
-              description:
-                  'Location का उपयोग केवल आवश्यक safety functions और आपकी consent के अनुसार किया जाएगा।',
+              status: locationStatus,
+              description: getLocationDescription(),
             ),
+
+            if (!locationLoading)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 14),
+                child: OutlinedButton.icon(
+                  onPressed: checkLocation,
+                  icon: const Icon(Icons.my_location),
+                  label: const Text('CHECK LOCATION AGAIN'),
+                ),
+              ),
 
             statusCard(
               icon: Icons.warning_amber,

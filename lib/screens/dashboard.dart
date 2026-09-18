@@ -1,11 +1,4 @@
 import 'package:flutter/material.dart';
-import '../services/location_service.dart';
-import 'package:geolocator/geolocator.dart';
-
-class Dashboard extends StatelessWidget {
-  const Dashboard({super.key});
-
-import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../services/location_service.dart';

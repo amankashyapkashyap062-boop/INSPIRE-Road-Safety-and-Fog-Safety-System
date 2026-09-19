@@ -28,7 +28,7 @@ jobs:
             --org=com.inspire.safety \
             build_app
 
-      - name: Add Android permissions
+      - name: Add Android permissions and service
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -42,11 +42,17 @@ jobs:
           permissions = [
               '    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />',
               '    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />',
+              '    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />',
               '    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />',
               '    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />',
+              '    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />',
+              '    <uses-permission android:name="android.permission.WAKE_LOCK" />',
           ]
 
-          manifest_end = content.find('>', content.find('<manifest'))
+          manifest_end = content.find(
+              '>',
+              content.find('<manifest')
+          )
 
           for permission in permissions:
               if permission not in content:
@@ -57,6 +63,25 @@ jobs:
                       + content[manifest_end + 1:]
                   )
                   manifest_end += len(permission) + 1
+
+          service = '''
+              <service
+                  android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
+                  android:foregroundServiceType="location"
+                  android:exported="false" />
+          '''
+
+          application_end = content.find(
+              '>',
+              content.find('<application')
+          )
+
+          if 'com.pravera.flutter_foreground_task.service.ForegroundService' not in content:
+              content = (
+                  content[:application_end + 1]
+                  + service
+                  + content[application_end + 1:]
+              )
 
           manifest.write_text(content, encoding="utf-8")
           PY
